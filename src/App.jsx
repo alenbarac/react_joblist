@@ -1,5 +1,11 @@
+import Landing from './pages/landing'
+
 function App() {
-  return <h1>Job list project</h1>
+  return (
+    <div>
+      <Landing />
+    </div>
+  )
 }
 
 export default App
