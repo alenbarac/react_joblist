@@ -17,7 +17,12 @@ export const registerUser = createAsyncThunk('user/registerUser', async (user, t
 })
 
 export const loginUser = createAsyncThunk('user/loginUser', async (user, thunkApi) => {
-  console.log(`Login User; ${user}`)
+  try {
+    const response = await customFetch.post('/auth/login', user)
+    return response.data
+  } catch (error) {
+    return thunkApi.rejectWithValue(error.response.data.msg)
+  }
 })
 
 const userSlice = createSlice({
@@ -34,6 +39,19 @@ const userSlice = createSlice({
       toast.success(`Hello there ${user.name}`)
     })
     builder.addCase(registerUser.rejected, (state, { payload }) => {
+      state.isLoading = false
+      toast.error(payload)
+    })
+    builder.addCase(loginUser.pending, (state) => {
+      state.isLoading = true
+    })
+    builder.addCase(loginUser.fulfilled, (state, { payload }) => {
+      const { user } = payload
+      state.user = user
+      state.isLoading = false
+      toast.success(`Welcome back ${user.name}`)
+    })
+    builder.addCase(loginUser.rejected, (state, { payload }) => {
       state.isLoading = false
       toast.error(payload)
     })
